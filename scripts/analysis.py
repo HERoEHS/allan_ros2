@@ -9,6 +9,8 @@
 import argparse
 import csv
 
+import matplotlib
+matplotlib.use('Agg')  # GUI 없이 PNG 파일로만 저장
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
