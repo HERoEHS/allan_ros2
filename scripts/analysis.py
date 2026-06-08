@@ -60,11 +60,31 @@ line_count = 0
 rostopic = "/sensors/imu"
 update_rate = 400.0
 if args.config:
-	import yaml #pip install pyyaml
+	import yaml  # pip install pyyaml
 	with open(args.config, "r") as stream:
 		config = yaml.safe_load(stream)
-	rostopic = config["imu_topic"]
-	update_rate = config["imu_rate"]
+
+	# 두 가지 형식 모두 지원:
+	# 1) 단순 플랫 YAML:
+	#    imu_topic: /topic
+	#    imu_rate: 400.0
+	# 2) ROS2 params YAML (allan_ros2 노드와 동일한 형식):
+	#    allan_node:
+	#      ros__parameters:
+	#        topic: /topic
+	#        publish_rate: 400
+	#        sample_rate: 400
+	if "imu_topic" in config and "imu_rate" in config:
+		rostopic = config["imu_topic"]
+		update_rate = config["imu_rate"]
+	elif "allan_node" in config and "ros__parameters" in config["allan_node"]:
+		params = config["allan_node"]["ros__parameters"]
+		rostopic = params.get("topic", rostopic)
+		# sample_rate 우선, 없으면 publish_rate 사용
+		if "sample_rate" in params:
+			update_rate = float(params["sample_rate"])
+		elif "publish_rate" in params:
+			update_rate = float(params["publish_rate"])
 
 # Assumes tum format
 
