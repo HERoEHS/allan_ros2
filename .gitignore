@@ -5,3 +5,4 @@ bags
 outputs
 config/dev_config.yaml
 
+.env.local

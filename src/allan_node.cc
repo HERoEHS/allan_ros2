@@ -2,6 +2,7 @@
 #include <string>
 #include <chrono>
 #include "allan_ros2/allan_node.hpp"
+#include "allan_ros2/path_utils.hpp"
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
 namespace allan_ros {
@@ -93,9 +94,12 @@ namespace allan_ros {
     }
 
     void AllanNode::process_bag() {
-        bag_storage_options.uri = bag_path.as_string();
+        // config 의 "~/..."·"$VAR" 를 여기서 펼친다(rosbag2 는 문자열을 그대로 연다).
+        const std::string bag_uri = expand_path(bag_path.as_string());
+        RCLCPP_INFO_STREAM(get_logger(), "Bag path : " << bag_path.as_string() << " -> " << bag_uri);
+        bag_storage_options.uri = bag_uri;
 
-        if (ends_with(bag_path.as_string(), "mcap")) {
+        if (ends_with(bag_uri, "mcap")) {
 	        bag_storage_options.storage_id = "mcap";
 	} else {
 		bag_storage_options.storage_id = "sqlite3";

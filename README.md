@@ -44,6 +44,10 @@ allan_node:
      sample_rate: # rate to sample data from bag. Higher sample rates take longer to compute 
 ```
 Note : Requires rebuilding after configuration ```colcon build --packages-select allan_ros2```. This will be fixed in a future release.
+
+> **EDIE 포크(HERoEHS/allan_ros2, `edie9`)** — `bag_path` 의 `~` 와 `$VAR`·`${VAR}` 를 노드가 펼친다. 그래서 같은 config 가 사용자 이름이 다른 PC·로봇에서 그대로 쓰인다.
+> 기본값은 `~/.edie/calib/imu_static_2h`(장비별 캘리브 데이터 자리)다. 빌드 없이 실행할 때 덮어써도 된다:
+> `ros2 run allan_ros2 allan_node --ros-args --params-file <config> -p bag_path:='~/.edie/calib/<bag>'`
 ## Run 
 Launch the node 
 ```bash
@@ -86,6 +90,7 @@ To obtain the noise paramaters run ```analysis.py``` with deviation data.
 ```bash
 python3 src/allan_ros2/scripts/analysis.py --data deviation.csv
 ```
+EDIE 포크는 `analysis.py` 도 설치한다 — install 트리만 있어도 `ros2 run allan_ros2 analysis.py --data deviation.csv --config <config>` 로 실행할 수 있다.
 ### Example ```imu.yaml```
 ```yaml
 #Accelerometers

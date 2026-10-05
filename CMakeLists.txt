@@ -76,4 +76,15 @@ install(
   DIRECTORY launch config  
   DESTINATION share/${PROJECT_NAME})
 
+# analysis.py 도 설치한다 — install 트리만 있는 배포(로봇·Yocto)에서도 `ros2 run allan_ros2 analysis.py` 로 쓰게.
+install(
+  PROGRAMS scripts/analysis.py
+  DESTINATION lib/${PROJECT_NAME})
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(test_path_utils test/test_path_utils.cpp)
+  target_include_directories(test_path_utils PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+endif()
+
 ament_package()
