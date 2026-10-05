@@ -1,14 +1,7 @@
 allan_node:
   ros__parameters:
-    # ------------------------ RAW IMU ------------------------
-    # topic: /edie/sensor/raw_imu
-    # bag_path: /home/higony/ros2_ws/src/edie9/edie_localization/third_party/viso_inertial_calib/data/imu_stationary/imu_stationary.db3
-    # msg_type: ros
-    # publish_rate: 500
-    # sample_rate: 500
-    # ------------------------ LPF IMU ------------------------
-    topic: /edie/sensor/lpf_imu
-    bag_path: /home/higony/ros2_ws/src/edie9/edie_localization/third_party/viso_inertial_calib/data/imu_static_2h/imu_static_2h.db3
+    topic: /edie/sensor/offset_imu
+    bag_path: /home/higony/ros2_ws/src/edie9/edie_localization/third_party/viso_inertial_calib/data/imu_static_2h
     msg_type: ros
-    publish_rate: 400
-    sample_rate: 400
+    publish_rate: 382
+    sample_rate: 382
