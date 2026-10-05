@@ -1,7 +1,7 @@
 allan_node:
   ros__parameters:
     topic: /edie/sensor/offset_imu
-    bag_path: ~/.edie/calib/imu_static_2h  # ~·$VAR 를 노드가 펼친다. 장비마다 홈이 달라도 그대로 쓴다
+    bag_path: ${EDIE_CALIB_DIR:-~/.edie/calib}/imu_static_2h  # ~·$VAR·${VAR:-기본값} 을 노드가 펼친다(pipeline.sh 의 EDIE_CALIB_DIR 와 같은 변수)
     msg_type: ros
     publish_rate: 382
     sample_rate: 382

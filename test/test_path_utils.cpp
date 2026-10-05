@@ -61,3 +61,19 @@ TEST_F(ExpandPath, MalformedLeftLiteral)
   EXPECT_EQ(expand_path("/a/$/b"), "/a/$/b");
   EXPECT_EQ(expand_path("cost$"), "cost$");
 }
+
+// ${VAR:-기본값} — 변수가 있으면 그 값, 없거나 비면 기본값(기본값의 ~ 도 펼침)
+TEST_F(ExpandPath, DefaultValueSyntax)
+{
+  EXPECT_EQ(expand_path("${EDIE_CALIB_DIR:-~/.edie/calib}/imu_static_2h"), "/data/calib/imu_static_2h");
+  EXPECT_EQ(expand_path("${EDIE_NOT_SET:-~/.edie/calib}/imu_static_2h"), "/home/tester/.edie/calib/imu_static_2h");
+  setenv("EDIE_EMPTY", "", 1);
+  EXPECT_EQ(expand_path("${EDIE_EMPTY:-/fallback}/x"), "/fallback/x");
+}
+
+// HOME 이 없으면(서비스 실행 등) ~ 를 그대로 둔다 — "/x" 같은 엉뚱한 경로를 만들지 않게
+TEST_F(ExpandPath, NoHomeKeepsTilde)
+{
+  unsetenv("HOME");
+  EXPECT_EQ(expand_path("~/x"), "~/x");
+}

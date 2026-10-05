@@ -45,8 +45,8 @@ allan_node:
 ```
 Note : Requires rebuilding after configuration ```colcon build --packages-select allan_ros2```. This will be fixed in a future release.
 
-> **EDIE 포크(HERoEHS/allan_ros2, `edie9`)** — `bag_path` 의 `~` 와 `$VAR`·`${VAR}` 를 노드가 펼친다. 그래서 같은 config 가 사용자 이름이 다른 PC·로봇에서 그대로 쓰인다.
-> 기본값은 `~/.edie/calib/imu_static_2h`(장비별 캘리브 데이터 자리)다. 빌드 없이 실행할 때 덮어써도 된다:
+> **EDIE 포크(HERoEHS/allan_ros2, `edie9`)** — `bag_path` 의 `~`, `$VAR`·`${VAR}`, `${VAR:-기본값}` 을 노드가 펼친다. 그래서 같은 config 가 사용자 이름이 다른 PC·로봇에서 그대로 쓰인다.
+> 기본값은 `${EDIE_CALIB_DIR:-~/.edie/calib}/imu_static_2h`(장비별 캘리브 데이터 자리, viso_inertial_calib `pipeline.sh` 와 같은 변수)다. 빌드 없이 실행할 때 덮어써도 된다:
 > `ros2 run allan_ros2 allan_node --ros-args --params-file <config> -p bag_path:='~/.edie/calib/<bag>'`
 ## Run 
 Launch the node 

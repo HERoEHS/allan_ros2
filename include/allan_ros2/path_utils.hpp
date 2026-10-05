@@ -9,8 +9,10 @@ namespace allan_ros {
 // 파라미터로 받은 경로의 `~` 와 환경변수를 펼친다.
 // rosbag2 는 받은 문자열을 그대로 열기 때문에, 셸이 해 주던 펼침을 여기서 대신한다.
 // 그래야 같은 config 가 PC·로봇(사용자 이름이 다름)·install-only 배포에서 그대로 쓰인다.
-//   "~" / "~/..."      → $HOME, $HOME/...  ("~user" 꼴은 펼치지 않는다)
-//   "${VAR}" / "$VAR"  → 환경변수 값(없으면 빈 문자열)
+//   "~" / "~/..."         → $HOME, $HOME/...  ("~user" 꼴, HOME 이 없을 때는 그대로 둔다)
+//   "${VAR}" / "$VAR"     → 환경변수 값(없으면 빈 문자열)
+//   "${VAR:-기본값}"       → VAR 가 비었거나 없으면 기본값(기본값 안의 ~·$ 도 펼친다) — pipeline.sh 의
+//                           ${EDIE_CALIB_DIR:-~/.edie/calib} 와 같은 꼴을 config 에도 쓸 수 있게
 // 명령 치환·단어 분리는 하지 않는다(wordexp 를 쓰지 않는 이유 — 공백 경로가 쪼개지지 않게).
 inline std::string expand_path(const std::string & in)
 {
@@ -20,8 +22,9 @@ inline std::string expand_path(const std::string & in)
     };
 
   std::string s = in;
-  if (!s.empty() && s[0] == '~' && (s.size() == 1 || s[1] == '/')) {
-    s = env("HOME") + s.substr(1);
+  const char * home = std::getenv("HOME");
+  if (home && !s.empty() && s[0] == '~' && (s.size() == 1 || s[1] == '/')) {
+    s = std::string(home) + s.substr(1);
   }
 
   std::string out;
@@ -37,7 +40,14 @@ inline std::string expand_path(const std::string & in)
         out += s.substr(i);
         break;
       }
-      out += env(s.substr(i + 2, close - i - 2));
+      const std::string body = s.substr(i + 2, close - i - 2);
+      const size_t dflt = body.find(":-");
+      if (dflt == std::string::npos) {
+        out += env(body);
+      } else {
+        const std::string val = env(body.substr(0, dflt));
+        out += val.empty() ? expand_path(body.substr(dflt + 2)) : val;
+      }
       i = close;
       continue;
     }
